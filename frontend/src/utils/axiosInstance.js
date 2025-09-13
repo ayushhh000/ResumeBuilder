@@ -1,3 +1,4 @@
+// axiosInstance.js
 import axios from "axios";
 import { BASE_URL } from "./apiPaths";
 
@@ -10,32 +11,43 @@ const axiosInstance = axios.create({
   },
 });
 
-//Request Interceptor
+// Request Interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("token");
-    if (accessToken) {
+
+    // Do NOT attach token for register or login endpoints
+    if (
+      accessToken &&
+      !config.url.includes("/register") &&
+      !config.url.includes("/login")
+    ) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-//Response Interceptor
+// Response Interceptor
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
     if (error.response) {
-      // Handle specific status codes
-      if (error.response.status === 401) {
-        window.location.href = "/"; // Redirect to login page
-      } else if (error.response.status === 500) {
-        console.log("Server Error");
+      const status = error.response.status;
+      const url = error.config?.url || "";
+
+      // Only redirect on 401 for protected routes
+      if (
+        status === 401 &&
+        !url.includes("/register") &&
+        !url.includes("/login")
+      ) {
+        localStorage.removeItem("token");
+        window.location.href = "/";
+      } else if (status === 500) {
+        console.error("Server Error:", error.response.data);
       } else if (error.code === "ECONNABORTED") {
         console.error("Request timeout");
       }

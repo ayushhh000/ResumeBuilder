@@ -2,11 +2,12 @@ import React, { useState, useContext } from "react";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
-import { API_PATHS } from "../utils/apiPaths";
+import { API_PATHS, BASE_URL } from "../utils/apiPaths";
 
 import { authStyles as styles } from "../assets/dummystyle";
 import { Input } from "./Input";
 import { validateEmail } from "../utils/helper";
+import axios from "axios";
 
 const Login = ({ setCurrentPage }) => {
   const [email, setEmail] = useState("");
@@ -28,7 +29,7 @@ const Login = ({ setCurrentPage }) => {
     setError("");
 
     try {
-      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
+      const response = await axios.post(`${BASE_URL}${API_PATHS.AUTH.LOGIN}`, {
         email,
         password,
       });

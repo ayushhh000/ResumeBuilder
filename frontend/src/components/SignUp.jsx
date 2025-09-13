@@ -3,10 +3,10 @@ import { authStyles as styles } from "../assets/dummystyle";
 import { useNavigate } from "react-router-dom";
 import { validateEmail } from "../utils/helper";
 import axios from "axios";
-import axiosInstance from "../utils/axiosInstance";
 import { Divide } from "lucide-react";
 import { UserContext } from "../context/userContext";
 import { Input } from "./Input";
+import { API_PATHS, BASE_URL } from "../utils/apiPaths";
 
 const SignUp = ({ setCurrentPage }) => {
   const [fullName, setFullName] = useState("");
@@ -33,17 +33,17 @@ const SignUp = ({ setCurrentPage }) => {
     setError("");
 
     try {
-      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
-        name: fullName,
-        email,
-        password,
-      });
-      const { token } = response.data;
-      if (token) {
-        localStorage.setItem("token", token);
-        updateUser(response.data);
-        navigate("/dashboard");
-      }
+      const response = await axios.post(
+        `${BASE_URL}${API_PATHS.AUTH.REGISTER}`,
+        {
+          name: fullName,
+          email,
+          password,
+        }
+      );
+
+      setError("Account created successfully! Please login.");
+      setCurrentPage("login");
     } catch (error) {
       setError(
         error.response?.data?.message ||
