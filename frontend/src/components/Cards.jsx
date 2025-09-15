@@ -25,7 +25,7 @@ export const ProfileInfoCard = () => {
 
   return (
     user && (
-      <div className={cardStyles.profileCards}>
+      <div className={cardStyles.profileCard}>
         <div className={cardStyles.profileInitialsContainer}>
           <span className={cardStyles.profileInitialsText}>
             {user.name ? user.name.charAt(0).toUpperCase() : ""}
